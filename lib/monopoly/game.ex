@@ -15,19 +15,18 @@ defmodule Monopoly.Game do
   @starting_money Application.compile_env(:monopoly, :starting_money, 1500)
 
   @spaces {:go, {:purple, 60, 2}, :community_chest, {:purple, 60, 4}, :income_tax,
-           {:railroad, 100, nil}, {:light_blue, 100, 6}, :chance, {:light_blue, 100, 6},
-           {:light_blue, 120, 8}, :visiting_jail, {:pink, 140, 10}, {:utility, 150, nil},
-           {:pink, 140, 10}, {:pink, 150, 12}, {:railroad, 200, nil}, {:orange, 180, 14},
+           {:railroad, 100}, {:light_blue, 100, 6}, :chance, {:light_blue, 100, 6},
+           {:light_blue, 120, 8}, :visiting_jail, {:pink, 140, 10}, {:utility, 150},
+           {:pink, 140, 10}, {:pink, 150, 12}, {:railroad, 200}, {:orange, 180, 14},
            :community_chest, {:orange, 180, 14}, {:orange, 200, 16}, :free_parking,
-           {:red, 220, 18}, :chance, {:red, 220, 18}, {:red, 240, 20}, {:railroad, 100, nil},
-           {:yellow, 260, 22}, {:utility, 150, nil}, {:yellow, 260, 22}, {:yellow, 280, 24},
+           {:red, 220, 18}, :chance, {:red, 220, 18}, {:red, 240, 20}, {:railroad, 100},
+           {:yellow, 260, 22}, {:utility, 150}, {:yellow, 260, 22}, {:yellow, 280, 24},
            :go_to_jail, {:green, 300, 26}, {:green, 300, 26}, :community_chest, {:green, 320, 28},
-           {:railroad, 200, nil}, :chance, {:dark_blue, 350, 35}, :luxury_tax,
-           {:dark_blue, 400, 50}}
+           {:railroad, 200}, :chance, {:dark_blue, 350, 35}, :luxury_tax, {:dark_blue, 400, 50}}
 
   @spaces_range 0..(tuple_size(@spaces) - 1)
-  @railroads Enum.filter(@spaces_range, &match?({:railroad, _, _}, elem(@spaces, &1)))
-  @utilities Enum.filter(@spaces_range, &match?({:utility, _, _}, elem(@spaces, &1)))
+  @railroads Enum.filter(@spaces_range, &match?({:railroad, _}, elem(@spaces, &1)))
+  @utilities Enum.filter(@spaces_range, &match?({:utility, _}, elem(@spaces, &1)))
 
   @special_spaces Enum.filter(@spaces_range, &(@spaces |> elem(&1) |> is_atom()))
   @ownership Map.new(Enum.to_list(@spaces_range) -- @special_spaces, &{&1, nil})
@@ -105,7 +104,7 @@ defmodule Monopoly.Game do
       {_, owner} when owner == nil or owner == active_player ->
         {:ok, game}
 
-      {{:railroad, _, _}, owner} ->
+      {{:railroad, _}, owner} ->
         rent =
           case @railroads |> filter_map(&(Map.fetch!(ownership, &1) == owner)) |> length() do
             1 -> 25
@@ -116,7 +115,7 @@ defmodule Monopoly.Game do
 
         {:ok, charge_rent(game, rent, owner)}
 
-      {{:utility, _, _}, owner} ->
+      {{:utility, _}, owner} ->
         rent =
           if @utilities |> filter_map(&(Map.fetch!(ownership, &1) == owner)) |> length() == 2 do
             dice_roll * 10
@@ -146,7 +145,7 @@ defmodule Monopoly.Game do
     position = Map.fetch!(positions, active_player)
 
     with {:ok, nil} <- Map.fetch(ownership, position),
-         {_, price, _} = elem(@spaces, position),
+         price = @spaces |> elem(position) |> elem(1),
          balance = Map.fetch!(balances, active_player),
          true <- price <= balance do
       balances = Map.put(balances, active_player, balance - price)

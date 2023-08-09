@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+mix compile --all-warnings --warnings-as-errors
+mix format --check-formatted
+mix test

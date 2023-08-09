@@ -14,7 +14,9 @@ defmodule Monopoly do
   end
 
   def end_turn(game_id, player_id) do
-    game_id |> GameState.end_turn(player_id) |> render(game_id)
+    result = GameState.end_turn(game_id, player_id)
+    render(result, game_id)
+    with {:ok, next_player, _} <- result, do: {:ok, next_player}
   end
 
   def end_game(game_id, player_id) do

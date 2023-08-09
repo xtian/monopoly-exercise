@@ -22,6 +22,8 @@ defmodule Monopoly.GameView do
   def render({:error, :not_found}, _), do: "Error: Game not found\n"
   def render({:error, :not_turn}, _), do: "Error: It's not your turn\n"
 
+  def render({:ok, _, game}, game_id), do: render({:ok, game}, game_id)
+
   def render({:ok, game}, game_id) do
     %{
       active_player: active_player,

@@ -42,11 +42,11 @@ defmodule Monopoly.GameState do
 
   def handle_call({:new_game, player_ids}, _from, tid) do
     result =
-      with {:ok, game} <- Game.new(player_ids) do
+      with {:ok, first_player, game} <- Game.new(player_ids) do
         game_id = Monopoly.new_id()
         :ets.insert(tid, {game_id, game})
 
-        {:ok, game_id}
+        {:ok, first_player, game_id}
       end
 
     {:reply, result, tid}
@@ -77,7 +77,7 @@ defmodule Monopoly.GameState do
   def handle_call({:end_turn, game_id, player_id}, _from, tid) do
     result =
       with {:ok, game} <- get_game(tid, game_id),
-           {:ok, game} = result <- Game.end_turn(game, player_id) do
+           {:ok, _, game} = result <- Game.end_turn(game, player_id) do
         :ets.insert(tid, {game_id, game})
         result
       end

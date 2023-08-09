@@ -44,7 +44,7 @@ defmodule Monopoly.Game do
       players_list = Enum.shuffle(player_ids)
       players = List.to_tuple(players_list)
 
-      {:ok,
+      {:ok, hd(players_list),
        %{
          active_player: 0,
          balances: Map.new(0..(tuple_size(players) - 1), &{&1, @starting_money}),
@@ -167,7 +167,9 @@ defmodule Monopoly.Game do
 
   def end_turn(game, _) do
     active_player = Integer.mod(game.active_player + 1, tuple_size(game.players))
-    {:ok, %{game | active_player: active_player, turn_started: false}}
+
+    {:ok, elem(game.players, active_player),
+     %{game | active_player: active_player, turn_started: false}}
   end
 
   def end_game(game, player_id) when not active?(game, player_id), do: {:error, :not_turn}

@@ -20,7 +20,9 @@ defmodule Monopoly.GameView do
   def render({:error, :owned}, _), do: "Error: Someone else already owns this property\n"
   def render({:error, :not_enough_money}, _), do: "Error: You don't have enough money\n"
   def render({:error, :not_found}, _), do: "Error: Game not found\n"
+  def render({:error, :not_purchaseable}, _), do: "Error: This property cannot be purchased\n"
   def render({:error, :not_turn}, _), do: "Error: It's not your turn\n"
+  def render({:error, :win_condition_unmet}, _), do: "Error: You haven't won the game yet\n"
 
   def render({:ok, _, game}, game_id), do: render({:ok, game}, game_id)
 
@@ -53,9 +55,15 @@ defmodule Monopoly.GameView do
           end)
           |> Enum.join(", ")
 
+        location =
+          case Map.fetch!(positions, index) do
+            -1 -> "Jail"
+            position -> elem(@space_names, position)
+          end
+
         """
         [#{player}]
-        Location: #{elem(@space_names, Map.fetch!(positions, index))}
+        Location: #{location}
         Balance: #{Map.fetch!(balances, index)}
         Owned Properties: #{owned_properties}
         """

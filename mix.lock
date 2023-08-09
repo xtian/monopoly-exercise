@@ -1,0 +1,3 @@
+%{
+  "persistent_ets": {:hex, :persistent_ets, "0.2.2", "bf4a0347e474b2c05ccf9d10f3e5282d1eef762eab070199e35ec3a213f629e9", [:mix], [], "hexpm", "63ff89eefb90dfc791a3cd63478f4e28512fd12ad5daead640fffc46bf2e465f"},
+}

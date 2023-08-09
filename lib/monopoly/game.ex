@@ -106,7 +106,7 @@ defmodule Monopoly.Game do
 
       {{:railroad, _}, owner} ->
         rent =
-          case @railroads |> filter_map(&(Map.fetch!(ownership, &1) == owner)) |> length() do
+          case Enum.count(@railroads, &(Map.fetch!(ownership, &1) == owner)) do
             1 -> 25
             2 -> 50
             3 -> 100
@@ -117,7 +117,7 @@ defmodule Monopoly.Game do
 
       {{:utility, _}, owner} ->
         rent =
-          if @utilities |> filter_map(&(Map.fetch!(ownership, &1) == owner)) |> length() == 2 do
+          if Enum.count(@utilities, &(Map.fetch!(ownership, &1) == owner)) == 2 do
             dice_roll * 10
           else
             dice_roll * 4
@@ -205,9 +205,5 @@ defmodule Monopoly.Game do
       end
 
     %{game | balances: balances, positions: positions}
-  end
-
-  defp filter_map(list, fun) do
-    :lists.filtermap(fun, list)
   end
 end
